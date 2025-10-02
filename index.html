@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TECHNOVA - Interface de Commande</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f1e;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge::after {
+            content: '3';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #f5576c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e1e30 0%, #2a2a40 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .stat-change {
+            font-size: 0.85em;
+            color: #38ef7d;
+            margin-top: 8px;
+        }
+
+        .stat-change.negative {
+            color: #f5576c;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: linear-gradient(135deg, #1e1e30 0%, #2a2a40 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .robot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .robot-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .robot-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: #667eea;
+        }
+
+        .robot-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .robot-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .robot-details h4 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .robot-status {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(56, 239, 125, 0.2);
+            color: #38ef7d;
+        }
+
+        .status-idle {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status-maintenance {
+            background: rgba(245, 87, 108, 0.2);
+            color: #f5576c;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .alert-item {
+            padding: 15px;
+            background: rgba(245, 87, 108, 0.1);
+            border-left: 4px solid #f5576c;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .alert-item h5 {
+            margin-bottom: 5px;
+            color: #f5576c;
+        }
+
+        .alert-item p {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .map-overlay svg {
+            width: 150px;
+            height: 150px;
+            opacity: 0.3;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .control-btn svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🤖 TECHNOVA</div>
+        <div class="header-right">
+            <div class="notification-badge">
+                <span style="font-size: 1.5em;">🔔</span>
+            </div>
+            <div class="user-info">
+                <div class="avatar">AN</div>
+                <div>
+                    <div style="font-weight: 600;">Ange Miguel</div>
+                    <div style="font-size: 0.85em; color: #888;">Administrateur</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Statistiques principales -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🤖</span>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Robots Actifs</div>
+                <div class="stat-change">↑ 2 depuis hier</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🌳</span>
+                </div>
+                <div class="stat-value">4,850</div>
+                <div class="stat-label">Arbres Traités Aujourd'hui</div>
+                <div class="stat-change">↑ 12% vs moyenne</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💧</span>
+                </div>
+                <div class="stat-value">348L</div>
+                <div class="stat-label">Production de Latex</div>
+                <div class="stat-change">↑ 8.5% cette semaine</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">⚡</span>
+                </div>
+                <div class="stat-value">94%</div>
+                <div class="stat-label">Efficacité Globale</div>
+                <div class="stat-change">↑ 3% ce mois</div>
+            </div>
+        </div>
+
+        <!-- Grille principale -->
+        <div class="main-grid">
+            <!-- Panneau de contrôle des robots -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Flotte de Robots</h3>
+                    <button class="btn btn-primary">+ Ajouter Robot</button>
+                </div>
+
+                <div class="robot-list">
+                    <div class="robot-item">
+                        <div class="robot-info">
+                            <div class="robot-avatar">🤖</div>
+                            <div class="robot-details">
+                                <h4>Robot Alpha-01</h4>
+                                <div class="robot-status">
+                                    <span class="status-badge status-active">Actif</span>
+                                    <span>Secteur A | 85% batterie</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary">Détails</button>
+                    </div>
+
+                    <div class="robot-item">
+                        <div class="robot-info">
+                            <div class="robot-avatar">🤖</div>
+                            <div class="robot-details">
+                                <h4>Robot Beta-02</h4>
+                                <div class="robot-status">
+                                    <span class="status-badge status-active">Actif</span>
+                                    <span>Secteur B | 92% batterie</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary">Détails</button>
+                    </div>
+
+                    <div class="robot-item">
+                        <div class="robot-info">
+                            <div class="robot-avatar">🤖</div>
+                            <div class="robot-details">
+                                <h4>Robot Gamma-03</h4>
+                                <div class="robot-status">
+                                    <span class="status-badge status-idle">En pause</span>
+                                    <span>Secteur C | 68% batterie</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary">Détails</button>
+                    </div>
+
+                    <div class="robot-item">
+                        <div class="robot-info">
+                            <div class="robot-avatar">🤖</div>
+                            <div class="robot-details">
+                                <h4>Robot Delta-04</h4>
+                                <div class="robot-status">
+                                    <span class="status-badge status-maintenance">Maintenance</span>
+                                    <span>Atelier | 45% batterie</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary">Détails</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau d'alertes -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Alertes & Notifications</h3>
+                </div>
+
+                <div class="alert-item">
+                    <h5>⚠️ Maintenance requise</h5>
+                    <p>Robot Delta-04 nécessite une intervention dans les 48h</p>
+                    <small style="color: #666;">Il y a 2 heures</small>
+                </div>
+
+                <div class="alert-item">
+                    <h5>🔋 Batterie faible</h5>
+                    <p>Robot Gamma-03 doit être rechargé bientôt</p>
+                    <small style="color: #666;">Il y a 4 heures</small>
+                </div>
+
+                <div class="alert-item" style="background: rgba(56, 239, 125, 0.1); border-color: #38ef7d;">
+                    <h5 style="color: #38ef7d;">✅ Objectif atteint</h5>
+                    <p>Secteur A complété à 100% aujourd'hui</p>
+                    <small style="color: #666;">Il y a 5 heures</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte et contrôles -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Cartographie de la Plantation</h3>
+                <button class="btn btn-secondary">Vue 3D</button>
+            </div>
+
+            <div class="map-container">
+                <div class="map-overlay">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <p style="color: #666; margin-top: 15px;">Visualisation interactive de la plantation</p>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="control-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                    </svg>
+                    <div>Mode Automatique</div>
+                </div>
+
+                <div class="control-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                    </svg>
+                    <div>Planifier Tâche</div>
+                </div>
+
+                <div class="control-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                    <div>Rapports</div>
+                </div>
+
+                <div class="control-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                    <div>Paramètres</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
